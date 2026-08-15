@@ -16,7 +16,7 @@ Most tutorials teach tools in isolation. This lab was built to connect the full 
  
 ## Architecture
  
-[AD Project Architecture](images/AD_Project_Architecture.png)
+![AD Project Architecture](images/AD_Project_Architecture.png)
  
 | Machine | Role | IP Address | Software Installed |
 |---|---|---|---|
