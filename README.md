@@ -96,10 +96,10 @@ The Ubuntu Server VM was configured as the central Splunk indexer — the machin
    ./splunk start
 ```
 6. Splunk completed its first-run setup (generating a self-signed cert, starting `splunkd`) and confirmed the web interface was reachable at `http://splunk:8000`
-![Static IP Configuration and Connectivity Check](image22.png)
-![Internet Connectivity Confirmed](image23.png)
-![Splunk Package Installation](image26.png)
-![Splunk First Start — Web Interface Ready](image27.png)
+![Static IP Configuration and Connectivity Check](images/image22.png)
+![Internet Connectivity Confirmed](images/image23.png)
+![Splunk Package Installation](images/image26.png)
+![Splunk First Start — Web Interface Ready](images/image27.png)
  
 This gave every other VM in the lab a live, central endpoint (`192.168.10.10:8000`) to forward telemetry to and search against.
  
