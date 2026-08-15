@@ -76,8 +76,36 @@ The Windows 10 VM was joined to the `vineet.local` domain to act as a client/tar
 ![TARGET-PC Listed in ADUC](images/image11.png)
  
 ---
+
+## Part 3: Ubuntu Server & Splunk Installation
  
-## Part 3: Log Collection Pipeline
+The Ubuntu Server VM was configured as the central Splunk indexer — the machine every other VM in the lab forwards its logs to.
+ 
+**Steps performed:**
+1. Installed Ubuntu Server and configured networking with a static IP (`192.168.10.10/24`) via netplan (`/etc/netplan/00-installer-config.yaml`)
+2. Verified connectivity with `ip a` and confirmed internet access with `ping google.com`
+3. Set up a shared folder between the host machine and the VM (VirtualBox Guest Additions / `vboxsf`) to transfer the Splunk installer package into the VM without needing a separate download inside the VM
+4. Installed Splunk Enterprise from the `.deb` package:
+```
+   sudo dpkg -i splunk-10.4.1-5a009d941268-linux-amd64.deb
+```
+5. Switched to the `splunk` service user and started Splunk for the first time:
+```
+   sudo -u splunk bash
+   cd /opt/splunk/bin
+   ./splunk start
+```
+6. Splunk completed its first-run setup (generating a self-signed cert, starting `splunkd`) and confirmed the web interface was reachable at `http://splunk:8000`
+![Static IP Configuration and Connectivity Check](image22.png)
+![Internet Connectivity Confirmed](image23.png)
+![Splunk Package Installation](image26.png)
+![Splunk First Start — Web Interface Ready](image27.png)
+ 
+This gave every other VM in the lab a live, central endpoint (`192.168.10.10:8000`) to forward telemetry to and search against.
+ 
+---
+ 
+## Part 4: Log Collection Pipeline
  
 To detect anything happening on the endpoints, telemetry needs to reach Splunk. The pipeline set up was:
  
@@ -90,7 +118,7 @@ This mirrors a standard enterprise logging architecture: lightweight forwarders 
  
 ---
  
-## Part 4: Attack Simulation #1 — RDP Brute Force
+## Part 5: Attack Simulation #1 — RDP Brute Force
  
 **Objective:** simulate a credential-based attack against a domain user account and detect it in Splunk.
  
@@ -135,7 +163,7 @@ This failed→success pattern (many 4625s clustered in seconds, followed by one 
  
 ---
  
-## Part 5: Attack Simulation #2 — Atomic Red Team
+## Part 6: Attack Simulation #2 — Atomic Red Team
  
 **Objective:** execute MITRE ATT&CK-mapped adversary techniques directly on the endpoint and confirm the resulting telemetry is captured and detectable in Splunk.
  
