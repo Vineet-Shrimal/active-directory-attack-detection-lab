@@ -16,7 +16,7 @@ Most tutorials teach tools in isolation. This lab was built to connect the full 
  
 ## Architecture
  
-![AD Project Architecture](AD_Project_Architecture.png)
+[AD Project Architecture](AD_Project_Architecture.png)
  
 | Machine | Role | IP Address | Software Installed |
 |---|---|---|---|
@@ -41,13 +41,13 @@ The Windows Server 2022 VM was promoted to a domain controller to create a reali
 2. Promoted the server to a **new forest**, establishing the root domain `vineet.local`
 3. Configured DNS as part of the promotion (DC also serves as the domain's DNS server)
 4. Verified successful promotion via Server Manager, confirming AD DS and DNS roles active
-![AD DS Role Selection](image1.png)
-![Installation Confirmation](image2.png)
-![Installation Results](image3.png)
-![Deployment Configuration - New Forest](image4.png)
-![Domain Controller Options](image5.png)
-![Prerequisites Check Passed](image6.png)
-![AD DS and DNS Active in Server Manager](image7.png)
+[AD DS Role Selection](image1.png)
+[Installation Confirmation](image2.png)
+[Installation Results](image3.png)
+[Deployment Configuration - New Forest](image4.png)
+[Domain Controller Options](image5.png)
+[Prerequisites Check Passed](image6.png)
+[AD DS and DNS Active in Server Manager](image7.png)
  
 ### Organizational Structure
  
@@ -70,10 +70,10 @@ The Windows 10 VM was joined to the `vineet.local` domain to act as a client/tar
 2. Authenticated with a domain administrator account
 3. Confirmed successful join and rebooted
 4. Verified on the DC side, in **Active Directory Users and Computers**, that the machine (`TARGET-PC`) now appears under the Computers container — proof of a successful join from the server's perspective
-![Domain Join Dialog](image8.png)
-![Domain Credentials Prompt](image9.png)
-![System Properties Showing Domain Membership](image10.png)
-![TARGET-PC Listed in ADUC](image11.png)
+[Domain Join Dialog](image8.png)
+[Domain Credentials Prompt](image9.png)
+[System Properties Showing Domain Membership](image10.png)
+[TARGET-PC Listed in ADUC](image11.png)
  
 ---
  
@@ -103,7 +103,7 @@ hydra -l pparker -P passwords.txt rdp://192.168.10.100
  
 **Result:** Hydra successfully identified valid credentials — `pparker : Admin@123` — among the tested password list.
  
-![Hydra Brute Force Attack](image12.png)
+[Hydra Brute Force Attack](image12.png)
  
 ### Detection in Splunk
  
@@ -115,7 +115,7 @@ index=endpoint pparker EventCode=4625
 ```
 Returned 20 failed logon events for the `pparker` account in a tight time window — matching the password list Hydra worked through before finding the correct one.
  
-![Splunk Search - 20 Failed Logon Events](image15.png)
+[Splunk Search - 20 Failed Logon Events](image15.png)
  
 **Successful login (Event ID 4624) immediately after:**
 ```
@@ -123,13 +123,13 @@ index=endpoint pparker EventCode=4624
 ```
 Returned a single successful logon event, timestamped right after the failed attempts — the exact "burst of failures, then one success" pattern that signals a successful brute-force attack.
  
-![Splunk Search - Successful Logon Event](image13.png)
+[Splunk Search - Successful Logon Event](image13.png)
  
 **All authentication activity for the account:**
 ```
 index=endpoint pparker
 ```
-![Splunk Search - All pparker Events](image14.png)
+[Splunk Search - All pparker Events](image14.png)
  
 This failed→success pattern (many 4625s clustered in seconds, followed by one 4624 for the same account and source) is the exact signature a SOC analyst would build an alert around in a real environment.
  
@@ -146,7 +146,7 @@ Install-AtomicRedTeam -getAtomics
 Import-Module "C:\AtomicRedTeam\invoke-atomicredteam\Invoke-AtomicRedTeam.psd1" -Force
 ```
  
-![Atomic Red Team Installation](image16.png)
+[Atomic Red Team Installation](image16.png)
  
 ### Technique 1 — T1136.001: Create a Local Account
  
@@ -158,7 +158,7 @@ This technique (MITRE ATT&CK **T1136.001 – Create Account: Local Account**) si
  
 **Result:** the test successfully created a local admin account (`NewLocalUser`), added it to the Administrators group, then cleaned up by deleting it — all steps completed successfully.
  
-![Atomic Test T1136.001 Execution](image17.png)
+[Atomic Test T1136.001 Execution](image17.png)
  
 **Detection in Splunk:**
 ```
@@ -166,7 +166,7 @@ index=endpoint NewLocalUser
 ```
 Returned 12 matching events, capturing the full account lifecycle (creation, group membership change, deletion) via Windows Security event logs.
  
-![Splunk Detection - NewLocalUser Account Activity](image18.png)
+[Splunk Detection - NewLocalUser Account Activity](image18.png)
  
 ### Technique 2 — T1059.001: PowerShell Execution
  
@@ -178,7 +178,7 @@ This technique (MITRE ATT&CK **T1059.001 – Command and Scripting Interpreter: 
  
 **Result:** the test executed successfully. The screenshot below shows the start of execution — the full run required scrolling beyond what a single screenshot could capture, so only the initial output was captured for documentation.
  
-![Atomic Test T1059.001 Execution](image20.png)
+[Atomic Test T1059.001 Execution](image20.png)
  
 **Detection in Splunk** — even the attempted execution generated detectable PowerShell telemetry via Sysmon:
 ```
@@ -186,7 +186,7 @@ index=endpoint powershell.exe -exec bypass -noprofile
 ```
 Captured the PowerShell process launch with suspicious flags (`-exec bypass -noprofile`) commonly associated with adversary tooling — a strong detection signature regardless of whether the payload itself succeeded.
  
-![Splunk Detection - Suspicious PowerShell Execution](image21.png)
+[Splunk Detection - Suspicious PowerShell Execution](image21.png)
  
 ---
  
